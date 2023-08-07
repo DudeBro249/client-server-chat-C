@@ -11,7 +11,7 @@
 
 #define SERV_TCP_PORT 23 /* server's port number */
 #define MAX_INPUT_OUTPUT_SIZE 300
-#define MAX_CLIENT_ID_SIZE 20
+#define MAX_CLIENT_ID_SIZE 21
 #define MAX_CLIENTS_DEFAULT 20
 
 
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 
     // Function to handle SIGINT (Ctrl+C) signal
     void sigint_handler(int signal_id) {
-            if(signal_id == SIGINT) {
+            if(signal_id == SIGINT || signal_id == SIGTERM) {
                 printf("\nClosing server...\n");
 
                 for (int i = 0; i < maximum_clients; i++)

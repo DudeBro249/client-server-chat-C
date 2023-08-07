@@ -11,7 +11,7 @@
 #include <pthread.h>
 #include <signal.h>
 
-#define MAX_CLIENT_ID_SIZE 20
+#define MAX_CLIENT_ID_SIZE 21
 #define MAX_INPUT_OUTPUT_SIZE 300
 #define SERV_TCP_PORT 23 /* server's port */
 
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
 
   // Function to handle SIGINT (Ctrl+C) signal
   void sigint_handler(int signal_id) {
-        if(signal_id == SIGINT) {
+        if(signal_id == SIGINT || signal_id == SIGTERM) {
             printf("\nClosing client...\n");
             
             close(server.socketfd);
@@ -149,7 +149,8 @@ int main(int argc, char *argv[])
   }
 
   if (argc >= 2) {
-    strncpy(client_id, argv[1], MAX_CLIENT_ID_SIZE);
+    memcpy(client_id, argv[1], MAX_CLIENT_ID_SIZE - 1);
+    client_id[MAX_CLIENT_ID_SIZE - 1] = '\0';
   }
 
   if (argc >= 3) {
@@ -217,7 +218,6 @@ int main(int argc, char *argv[])
 }
 
 /*
-TODO: Finish this
 TO RUN THIS CODE:
 	gcc final_project_client.c -lpthread -o client
 	./client client1 localhost 7777
@@ -225,5 +225,4 @@ TO RUN THIS CODE:
 	./client client1 127.0.0.1 7777
 
     NOTE: client1 is the ID of the client that will be registered with the server
-
 */
