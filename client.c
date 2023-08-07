@@ -16,7 +16,7 @@
 #define SERV_TCP_PORT 23 /* server's port */
 
 
-char INPUT_PROMPT[42] = ">>> ";
+char INPUT_PROMPT[5] = ">>> ";
 
 
 struct server_data {
@@ -29,7 +29,7 @@ pthread_mutex_t print_prompt_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t print_prompt_condition_variable = PTHREAD_COND_INITIALIZER;
 
 
-void* handleServer(void* args) {
+void* handle_server(void* args) {
     char string[MAX_INPUT_OUTPUT_SIZE];
     int len;
     char server_address_string[30];
@@ -51,7 +51,7 @@ void* handleServer(void* args) {
             printf("%s", backspaces);
             fflush(stdout);
 
-            printf("Server with address %s has disconnected.\n", server_address_string);
+            printf("Server with address %s has disconnected from the client.\n", server_address_string);
 
             raise(SIGINT);
             return NULL;
@@ -121,7 +121,7 @@ void* prompter(void* args) {
 
 int main(int argc, char *argv[])
 {
-  char* client_id;
+  char client_id[MAX_CLIENT_ID_SIZE];
   int sockfd;
   struct sockaddr_in serv_addr;
   char *serv_host = "localhost";
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
   }
 
   if (argc >= 2) {
-    client_id = argv[1];
+    strncpy(client_id, argv[1], MAX_CLIENT_ID_SIZE);
   }
 
   if (argc >= 3) {
@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
   pthread_t input_and_send_thread;
 
 
-  pthread_create(&server_thread, NULL, handleServer, NULL);
+  pthread_create(&server_thread, NULL, handle_server, NULL);
   pthread_create(&prompter_thread, NULL, prompter, NULL);
   pthread_create(&input_and_send_thread, NULL, input_and_send, NULL);
 
@@ -220,8 +220,10 @@ int main(int argc, char *argv[])
 TODO: Finish this
 TO RUN THIS CODE:
 	gcc final_project_client.c -lpthread -o client
-	./client client_1 localhost 7777
+	./client client1 localhost 7777
 	OR
-	./client 127.0.0.1 7777
+	./client client1 127.0.0.1 7777
+
+    NOTE: client1 is the ID of the client that will be registered with the server
 
 */
